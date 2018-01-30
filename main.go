@@ -23,6 +23,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 //
@@ -79,10 +80,25 @@ func main() {
 		fatal(err)
 	}
 
+	// split the table list into a string[]
+	tables := strings.Split(config.tables, ",")
+
+	tablePaths := make([]string, 0)
+	for _, t := range tables {
+		newPath := filepath.Join(config.inputDir, t)
+		tablePaths = append(tablePaths, newPath)
+	}
+
+	if len(tablePaths) == 0 {
+		fmt.Println("Error: unable to alloc mem for table filepaths.")
+		os.Exit(1)
+	}
+
 	// create output paths to for where the files will be generated
 	outputFilepath := filepath.Join(config.outputDir, DefaultCSVOutputFilename)
 
 	// TODO: add logic here to read rosewood files
+	tablePaths = tablePaths
 	outputFilepath = outputFilepath
 
 	os.Exit(0)
