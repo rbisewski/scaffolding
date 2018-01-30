@@ -97,20 +97,42 @@ func main() {
 	// create output paths to for where the files will be generated
 	outputFilepath := filepath.Join(config.outputDir, DefaultCSVOutputFilename)
 
-	// TODO: add logic here to read rosewood files
-	tablePaths = tablePaths
-	outputFilepath = outputFilepath
+	// cycle thru every file
+	contents := ""
+	for i, path := range tablePaths {
+
+		byteContents, err := ioutil.ReadFile(path)
+		if err != nil {
+			fatal(err)
+		}
+
+		rosewoodFileContents := string(byteContents)
+
+		if rosewoodFileContents == "" {
+			continue
+		}
+
+		rosewoodLines := strings.Split(rosewoodFileContents, "\n")
+
+		csvOutput, err := convertRosewoodToCSV(rosewoodLines, i)
+		if err != nil {
+			fatal(err)
+		}
+
+		contents += csvOutput + "\n"
+	}
+
+	err = ioutil.WriteFile(outputFilepath, []byte(contents), 0644)
+	if err != nil {
+		fatal(err)
+	}
 
 	os.Exit(0)
 }
 
-const (
-	redColor = "\x1b[31m"
-)
-
 // Fatal prints error message in red and exits to shell with code 1
 func fatal(err error) {
-	fmt.Fprintf(os.Stderr, redColor+"%s\n", err)
+	fmt.Fprintf(os.Stderr, "\n%s\n", err)
 	os.Exit(1)
 }
 
