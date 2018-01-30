@@ -40,7 +40,7 @@ var (
 	PrintVersionArgument = false
 
 	// Default output file name
-	DefaultCSVOutputFilename = "scaffolding.csv"
+	DefaultCSVOutputFilename = "rosewood.csv"
 )
 
 //
