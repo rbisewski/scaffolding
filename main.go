@@ -114,7 +114,7 @@ func main() {
 
 		rosewoodLines := strings.Split(rosewoodFileContents, "\n")
 
-		csvOutput, err := convertRosewoodToCSV(rosewoodLines, i)
+		csvOutput, err := convertRosewoodToCSV(rosewoodLines, i+1)
 		if err != nil {
 			fatal(err)
 		}
