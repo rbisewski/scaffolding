@@ -67,3 +67,32 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 
 	return result, nil
 }
+
+// ReadOdtFile ... read contents of Odt file
+func ReadOdtFile(path string) (*ReplaceOdt, error) {
+
+	// TODO: implement the below logic
+	/*
+		reader, err := zipOpenReader(path)
+		if err != nil {
+			return nil, err
+		}
+
+		content, err := readText(reader.File)
+		if err != nil {
+			return nil, err
+		}
+
+		settings, err := readSettings(reader.File)
+		if err != nil {
+			return nil, err
+		}
+
+		styles, err := readStyles(reader.File)
+		if err != nil {
+			return nil, err
+		}
+	*/
+
+	return &ReplaceOdt{}, nil
+}
