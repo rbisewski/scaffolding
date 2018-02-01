@@ -41,6 +41,9 @@ var (
 
 	// Default output file name
 	DefaultCSVOutputFilename = "rosewood.csv"
+
+	// Default templates directory
+	DefaultTemplatesDir = "templates"
 )
 
 //
@@ -126,6 +129,11 @@ func main() {
 	if err != nil {
 		fatal(err)
 	}
+
+	// TODO: enable this once it is working
+	//odtTemplate, err := ReadOdtFile("odt_blank_template")
+	//newOdtFile := odtTemplate.New()
+	//newOdtFile.Write("/tmp/test.odt")
 
 	os.Exit(0)
 }
