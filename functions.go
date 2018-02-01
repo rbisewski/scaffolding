@@ -1,7 +1,13 @@
 package main
 
 import (
+	"archive/zip"
+	"bytes"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -69,30 +75,147 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 }
 
 // ReadOdtFile ... read contents of Odt file
-func ReadOdtFile(path string) (*ReplaceOdt, error) {
+func ReadOdtFile(templateName string) (*CachedOdtTemplate, error) {
 
-	// TODO: implement the below logic
-	/*
-		reader, err := zipOpenReader(path)
+	if templateName == "" {
+		return nil, fmt.Errorf("ReadOdtFile() --> invalid input")
+	}
+
+	path := filepath.Join(DefaultTemplatesDir, templateName)
+
+	//
+	// decompress the ODT file as it is in Zip format
+	//
+	reader, err := zip.OpenReader(path)
+	if err != nil {
+		return nil, err
+	}
+
+	//
+	// obtain the strings from content.xml, settings.xml, and styles.xml
+	//
+
+	content, err := readFile(reader.File, "content.xml")
+	if err != nil {
+		return nil, err
+	}
+
+	settings, err := readFile(reader.File, "settings.xml")
+	if err != nil {
+		return nil, err
+	}
+
+	styles, err := readFile(reader.File, "styles.xml")
+	if err != nil {
+		return nil, err
+	}
+
+	return &CachedOdtTemplate{zipReader: reader, content: content, settings: settings, styles: styles}, nil
+}
+
+// New ... pass back an new editable instance of the ODT file
+func (r *CachedOdtTemplate) New() *Odt {
+	return &Odt{
+		files:    r.zipReader.File,
+		content:  r.content,
+		settings: r.settings,
+		styles:   r.styles,
+	}
+}
+
+// readContent ... open content.xml from the cached ODT file
+func readFile(files []*zip.File, filename string) (string, error) {
+
+	if files == nil || len(files) == 0 || filename == "" {
+		return "", fmt.Errorf("readContentFile --> invalid input")
+	}
+
+	var fileOfInterest *zip.File
+	var documentReader io.ReadCloser
+
+	for _, f := range files {
+		if f.Name == filename {
+			fileOfInterest = f
+			break
+		}
+	}
+
+	if fileOfInterest == nil {
+		return "", fmt.Errorf("readContentFile --> content.xml not found")
+	}
+
+	documentReader, err := fileOfInterest.Open()
+	if err != nil {
+		return "", err
+	}
+
+	bytes, err := ioutil.ReadAll(documentReader)
+	if err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
+}
+
+func (odt *Odt) Write(path string) error {
+
+	if odt.files == nil || odt.content == "" || path == "" {
+		return fmt.Errorf("Write() --> invalid input")
+	}
+
+	newFile, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("Write() --> unable to create ODT file: " + path)
+	}
+	defer newFile.Close()
+
+	zipWriter := zip.NewWriter(newFile)
+
+	for _, file := range odt.files {
+
+		var writer io.Writer
+		var readCloser io.ReadCloser
+
+		writer, err = zipWriter.Create(file.Name)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		content, err := readText(reader.File)
+		readCloser, err = file.Open()
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		settings, err := readSettings(reader.File)
-		if err != nil {
-			return nil, err
-		}
+		//
+		// Handle each of the subfiles of interest
+		//
 
-		styles, err := readStyles(reader.File)
-		if err != nil {
-			return nil, err
-		}
-	*/
+		switch file.Name {
 
-	return &ReplaceOdt{}, nil
+		case "content.xml":
+			writer.Write([]byte(odt.content))
+		case "styles.xml":
+			writer.Write([]byte(odt.styles))
+		case "settings.xml":
+			writer.Write([]byte(odt.settings))
+		default:
+			writer.Write(streamToByte(readCloser))
+		}
+	}
+	zipWriter.Close()
+
+	return nil
+}
+
+// streamToByte ... convert a string stream to a byte array
+func streamToByte(stream io.Reader) []byte {
+
+	if stream == nil {
+		return []byte{}
+	}
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(stream)
+
+	return buf.Bytes()
 }
