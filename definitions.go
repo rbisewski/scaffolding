@@ -23,16 +23,12 @@ type Odt struct {
 	content  string
 	settings string
 	styles   string
-	headers  map[string]string
-	footers  map[string]string
 }
 
-// ReplaceOdt ... structure for handling ODT files content replacement
-type ReplaceOdt struct {
+// CachedOdtTemplate ... structure for handling ODT files content replacement
+type CachedOdtTemplate struct {
 	zipReader *zip.ReadCloser
 	content   string
 	settings  string
 	styles    string
-	headers   map[string]string
-	footers   map[string]string
 }
