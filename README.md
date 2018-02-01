@@ -54,3 +54,4 @@ program work as expected.
 ## TODO
 
 * Consider adding an option to create ODT files with autopopulated tables.
+* Add flag to give end-user the option to create either CSV or ODT files.
