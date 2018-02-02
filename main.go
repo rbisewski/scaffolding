@@ -39,8 +39,14 @@ var (
 	// Whether or not to print the version + build information
 	PrintVersionArgument = false
 
-	// Default output file name
+	// Whether to print CSV or ODT output
+	PrintAsCSV = false
+
+	// Default CSV output file name
 	DefaultCSVOutputFilename = "rosewood.csv"
+
+	// Default ODT output file name
+	DefaultODTOutputFilename = "rosewood.odt"
 
 	// Default templates directory
 	DefaultTemplatesDir = "templates"
@@ -98,7 +104,11 @@ func main() {
 	}
 
 	// create output paths to for where the files will be generated
-	outputFilepath := filepath.Join(config.outputDir, DefaultCSVOutputFilename)
+	defaultOutputFilename := DefaultODTOutputFilename
+	if PrintAsCSV {
+		defaultOutputFilename = DefaultCSVOutputFilename
+	}
+	outputFilepath := filepath.Join(config.outputDir, defaultOutputFilename)
 
 	// cycle thru every file
 	contents := ""
@@ -125,16 +135,20 @@ func main() {
 		contents += csvOutput + "\n"
 	}
 
-	err = ioutil.WriteFile(outputFilepath, []byte(contents), 0644)
-	if err != nil {
-		fatal(err)
+	// Print a plaint-text CSV file with the rosewood file contents
+	if PrintAsCSV {
+		err = ioutil.WriteFile(outputFilepath, []byte(contents), 0644)
+		if err != nil {
+			fatal(err)
+		}
+		os.Exit(0)
 	}
 
-	// TODO: enable this once it is working
-	//odtTemplate, err := ReadOdtFile("odt_blank_template")
-	//newOdtFile := odtTemplate.New()
-	//newOdtFile.Write("/tmp/test.odt")
-
+	// Print an ODT file with the rosewood file contents
+	odtTemplate, err := ReadOdtFile("odt_blank_template")
+	newOdtFile := odtTemplate.New()
+	newOdtFile.AppendStrings(contents)
+	newOdtFile.Write(outputFilepath)
 	os.Exit(0)
 }
 
@@ -156,6 +170,7 @@ func setupArguments(config *Config) error {
 		fmt.Println(usageMessage)
 	}
 
+	flag.BoolVar(&PrintAsCSV, "csv", false, "")
 	flag.StringVar(&config.tables, "tables", "", "")
 	flag.StringVar(&config.inputDir, "indir", ".", "")
 	flag.StringVar(&config.outputDir, "outdir", ".", "")
