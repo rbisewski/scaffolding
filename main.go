@@ -132,7 +132,22 @@ func main() {
 			fatal(err)
 		}
 
-		contents += csvOutput + "\n"
+		// If CSV then just newlines, else if ODT then do page-breaks after each table
+		if PrintAsCSV {
+
+			// plain-text CSV
+			contents += csvOutput + "\n"
+
+		} else if contents == "" {
+
+			// first table of ODT
+			contents += csvOutput
+
+		} else {
+
+			// subsequent tables of ODT
+			contents += ":rosewood-page-break:" + csvOutput
+		}
 	}
 
 	// Print a plaint-text CSV file with the rosewood file contents
