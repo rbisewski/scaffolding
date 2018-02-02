@@ -157,6 +157,47 @@ func readFile(files []*zip.File, filename string) (string, error) {
 	return string(bytes), nil
 }
 
+// AppendStrings ... attach plain-text word to the document in question
+func (odt *Odt) AppendStrings(data string) error {
+
+	// no data means nothing to do
+	if data == "" {
+		return nil
+	}
+
+	newContentXML := ""
+
+	pieces := strings.Split(odt.content, "<text:p text:style-name=\"Standard\"/>")
+
+	if len(pieces) != 2 {
+		return fmt.Errorf("AppendString() --> malformed template, consider replacing the ODT template")
+	}
+
+	lines := strings.Split(data, "\n")
+
+	// no lines mean nothing to do
+	if len(lines) == 0 {
+		return nil
+	}
+
+	newContentXML += pieces[0]
+	for _, line := range lines {
+
+		// adjust the line to handle certain special characters
+		fixedLine := line
+		fixedLine = strings.Replace(fixedLine, ">", "&gt;", -1)
+		fixedLine = strings.Replace(fixedLine, "<", "&lt;", -1)
+
+		newContentXML += "<text:p text:style-name=\"Standard\">" + fixedLine + "</text:p>"
+	}
+	newContentXML += "<text:p text:style-name=\"Standard\"/>" + pieces[1]
+
+	// replace the old content.xml with the newly generated content
+	odt.content = newContentXML
+	return nil
+}
+
+// Write ... take the modified ODT file in memory and write it to a file
 func (odt *Odt) Write(path string) error {
 
 	if odt.files == nil || odt.content == "" || path == "" {
