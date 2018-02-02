@@ -1,6 +1,6 @@
 # scaffolding
 
-Convert rosewood tables into plain-text CSV files.
+Convert rosewood tables into ISO standard ODT files.
 
 ## Building
 
@@ -24,7 +24,7 @@ An example usage of the `scaffolding` program is as follows:
 Where `tables` is a CSV delimited list of table names to search for an
 attempt to read, `indir` is the path to where the input plain-text files
 are stored and `outdir` is the location to write the output file. By default
-the output file name is `rosewood.csv`. The file itself can then be opened
+the output file name is `rosewood.odt`. The file itself can then be opened
 with software like LibreOffice.
 
 To import them as LibreOffice Writer tables, do the following:
@@ -54,4 +54,3 @@ program work as expected.
 ## TODO
 
 * Consider adding an option to create ODT files with autopopulated tables.
-* Add flag to give end-user the option to create either CSV or ODT files.

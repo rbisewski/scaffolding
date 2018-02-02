@@ -1,9 +1,10 @@
 package main
 
 /*
- * Convert rosewood tables into plain-text CSV files.
+ * Convert rosewood tables into ISO standard ODT files.
  *
  * Usage: identify_conditions
+ *        -csv
  *        -tables <comma,separated,list,of,tables>
  *        -indir  <path_to_input_directory>
  *        -outdir <path_to_output_directory>
@@ -11,6 +12,7 @@ package main
  * Arguments:
  * 	h, help       Prints this usage message
  *   	version       Prints the current program version and build info
+ *	csv           Prints the given rosewood tables as plain-text CSVs (default is ODT)
  * 	tables        Comma separated list of tables; e.g. "table-w-conditions,table-wo-screening"
  * 	outdir        Output location; e.g. /path/to/output/directory
  *
