@@ -146,7 +146,7 @@ func main() {
 		} else {
 
 			// subsequent tables of ODT
-			contents += ":rosewood-page-break:" + csvOutput
+			contents += ":scaffolding-page-break:" + csvOutput
 		}
 	}
 

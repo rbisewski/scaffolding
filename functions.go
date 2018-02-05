@@ -36,7 +36,7 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 
 		if titleHasNotBeenPrinted {
 			numAsStr := strconv.Itoa(num)
-			result += "Table " + numAsStr + ": " + trimmedLine + "\n"
+			result += "Table " + numAsStr + ": " + trimmedLine + "\n:scaffolding-table-start:\n"
 			titleHasNotBeenPrinted = false
 			continue
 		}
@@ -58,7 +58,7 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 			if i == 0 && strings.HasPrefix(p, "  ") && PrintAsCSV {
 				prefix = "  "
 			} else if i == 0 && strings.HasPrefix(p, "  ") {
-				prefix = ":rosewood-odt-space:"
+				prefix = ":scaffolding-odt-space:"
 			}
 
 			cleanedString := strings.TrimSpace(p)
@@ -80,6 +80,8 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 
 		result += cleanedLine + "\n"
 	}
+
+	result += ":scaffolding-table-end:\n"
 
 	return result, nil
 }
@@ -251,8 +253,8 @@ func (odt *Odt) AppendStrings(data string) error {
 		fixedLine = strings.Replace(fixedLine, ">", "&gt;", -1)
 		fixedLine = strings.Replace(fixedLine, "<", "&lt;", -1)
 
-		if strings.Contains(fixedLine, ":rosewood-page-break:") {
-			fixedLine = strings.Replace(fixedLine, ":rosewood-page-break:",
+		if strings.Contains(fixedLine, ":scaffolding-page-break:") {
+			fixedLine = strings.Replace(fixedLine, ":scaffolding-page-break:",
 				"<text:p text:style-name=\"Standard\"/><text:p text:style-name=\"Standard\"/><text:p text:style-name=\"P1\">", -1)
 			newContentXML += fixedLine + "</text:p>"
 		} else {
@@ -268,7 +270,7 @@ func (odt *Odt) AppendStrings(data string) error {
 	// Handle start-of-column spacing
 	//
 
-	newContentXML = strings.Replace(odt.content, ":rosewood-odt-space:", "<text:s text:c=\"2\"/>", -1)
+	newContentXML = strings.Replace(odt.content, ":scaffolding-odt-space:", "<text:s text:c=\"2\"/>", -1)
 
 	// replace the old content.xml with the newly generated content
 	odt.content = newContentXML
