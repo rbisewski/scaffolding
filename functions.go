@@ -181,11 +181,53 @@ func (odt *Odt) AppendStrings(data string) error {
 
 	newContentXML := strings.Replace(odt.content, "<office:automatic-styles/>", "<office:automatic-styles>"+
 		"<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
-		"<style:paragraph-properties fo:break-before=\"page\"/></style:style></office:automatic-styles>", -1)
+		"<style:paragraph-properties fo:break-before=\"page\"/></style:style>"+
+		"<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Footer\">"+
+		"<style:paragraph-properties fo:text-align=\"end\" style:justify-single-word=\"false\"/>"+
+		"</style:style></office:automatic-styles>", -1)
 
 	// replace the old content.xml with the newly generated content
 	odt.content = newContentXML
 	newContentXML = ""
+
+	//
+	// Append the new footer styles
+	//
+
+	newStylesXML := strings.Replace(odt.styles, "</style:style><text:outline-style style:name=\"Outline\">",
+		"</style:style>"+
+			"<style:style style:name=\"Footer\" style:family=\"paragraph\" style:parent-style-name=\"Standard\" style:class=\"extra\">"+
+			"<style:paragraph-properties text:number-lines=\"false\" text:line-number=\"0\">"+
+			"<style:tab-stops>"+
+			"<style:tab-stop style:position=\"8.795cm\" style:type=\"center\"/>"+
+			"<style:tab-stop style:position=\"17.59cm\" style:type=\"right\"/>"+
+			"</style:tab-stops>"+
+			"</style:paragraph-properties>"+
+			"</style:style>"+
+			"<text:outline-style style:name=\"Outline\">", -1)
+
+	newStylesXML = strings.Replace(newStylesXML, "<office:automatic-styles><style:page-layout style:name=\"Mpm1\">",
+		"<office:automatic-styles><style:style style:name=\"MP1\" style:family=\"paragraph\" style:parent-style-name=\"Footer\">"+
+			"<style:paragraph-properties fo:text-align=\"end\" style:justify-single-word=\"false\"/>"+
+			"</style:style><style:page-layout style:name=\"Mpm1\">", -1)
+
+	newStylesXML = strings.Replace(newStylesXML, "<style:footer-style/>",
+		"<style:footer-style>"+
+			"<style:header-footer-properties fo:min-height=\"0cm\" fo:margin-top=\"0.499cm\"/>"+
+			"</style:footer-style>", -1)
+
+	newStylesXML = strings.Replace(newStylesXML, "<style:master-page style:name=\"Standard\" style:page-layout-name=\"Mpm1\"/>",
+		"<style:master-page style:name=\"Standard\" style:page-layout-name=\"Mpm1\">"+
+			"<style:footer>"+
+			"<text:p text:style-name=\"MP1\">"+
+			"<text:page-number text:select-page=\"current\">1</text:page-number>"+
+			"</text:p>"+
+			"</style:footer>"+
+			"</style:master-page>", -1)
+
+	// replace the old styles.xml with the newly generated content
+	odt.styles = newStylesXML
+	newStylesXML = ""
 
 	//
 	// Append the string text
