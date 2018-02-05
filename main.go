@@ -71,7 +71,7 @@ func main() {
 	// if the version flag has been set to true, print the version
 	// information and quit
 	if PrintVersionArgument {
-		fmt.Printf("Scaffolding CSV Generator v%s, Build: %s\n", Version, Build)
+		fmt.Printf("Scaffolding ODT Generator v%s, Build: %s\n", Version, Build)
 		os.Exit(0)
 	}
 

@@ -21,11 +21,15 @@ An example usage of the `scaffolding` program is as follows:
 ./scaffolding -tables "conditions-table,screening-table" -indir /path/to/tables -outdir /path/to/write/output
 ```
 
-Where `tables` is a CSV delimited list of table names to search for an
+Where `tables` is a comma delimited list of table names to search for an
 attempt to read, `indir` is the path to where the input plain-text files
 are stored and `outdir` is the location to write the output file. By default
 the output file name is `rosewood.odt`. The file itself can then be opened
 with software like LibreOffice.
+
+This program can also convert Rosewood tables into CSV using the `-csv` flag,
+in the event that the end-users wishes to have plain-text or wants to manually
+generate the output tables. In that scenario, follow the below steps...
 
 To import them as LibreOffice Writer tables, do the following:
 
