@@ -20,6 +20,8 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 	}
 
 	titleHasNotBeenPrinted := true
+	headerHasBeenPrinted := false
+	rowNum := 1
 	result := ""
 
 	// attempt to obtain the number of columns of the table
@@ -38,6 +40,9 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 	// for every line in the table...
 	for _, l := range lines {
 
+		// set a table number
+		numAsStr := strconv.Itoa(num)
+
 		trimmedLine := strings.TrimSpace(l)
 
 		if trimmedLine == "" {
@@ -49,18 +54,27 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 		}
 
 		if titleHasNotBeenPrinted {
-			numAsStr := strconv.Itoa(num)
-			result += "Table " + numAsStr + ": " + trimmedLine + "\n:scaffolding-table-start-len-" + lengthAsString + ":\n"
+			result += "Table " + numAsStr + ": " + trimmedLine + "\n:scaffolding-table-start:\n"
+			result += ":scaffolding-column-len-" + lengthAsString + ":\n"
 			titleHasNotBeenPrinted = false
 			continue
+		} else if !headerHasBeenPrinted {
+			headerHasBeenPrinted = true
+		} else {
+			rowNum = 2
 		}
 
-		pieces := strings.Split(l, "|")
+		// generate a row number, for purposes of styling
+		rowNumAsString := strconv.Itoa(rowNum)
 
 		// Rosewood instructions are exactly one piece, so check for 2+
+		pieces := strings.Split(l, "|")
 		if len(pieces) < 2 {
 			continue
 		}
+
+		// set a starting letter, ISO standard suggests A
+		startingLetter := 65
 
 		cleanedLine := ""
 		for i, p := range pieces {
@@ -85,14 +99,19 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 				cleanedString = strings.Replace(cleanedString, ",", " ", -1)
 			}
 
+			letterStr := string(byte(startingLetter))
+			cellStartStyle := ":scaffolding-cell-start-table-" + numAsStr + "." + letterStr + rowNumAsString + ":"
+
 			if i == 0 {
-				cleanedLine = prefix + cleanedString
+				cleanedLine = cellStartStyle + prefix + cleanedString + ":scaffolding-cell-end: "
 			} else {
-				cleanedLine += "," + cleanedString
+				cleanedLine += cellStartStyle + cleanedString + ":scaffolding-cell-end: "
 			}
+
+			startingLetter++
 		}
 
-		result += cleanedLine + "\n"
+		result += ":scaffolding-row-start:" + cleanedLine + ":scaffolding-row-end:\n"
 	}
 
 	result += ":scaffolding-table-end:\n"
