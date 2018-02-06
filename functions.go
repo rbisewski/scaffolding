@@ -22,6 +22,20 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 	titleHasNotBeenPrinted := true
 	result := ""
 
+	// attempt to obtain the number of columns of the table
+	maxLength := 0
+	for _, l := range lines {
+		pieces := strings.Split(l, "|")
+		if len(pieces) > maxLength {
+			maxLength = len(pieces) - 1
+		}
+	}
+	if maxLength < 1 {
+		return "", fmt.Errorf("convertRosewoodToCSV() --> empty table given")
+	}
+	lengthAsString := strconv.Itoa(maxLength)
+
+	// for every line in the table...
 	for _, l := range lines {
 
 		trimmedLine := strings.TrimSpace(l)
@@ -36,7 +50,7 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 
 		if titleHasNotBeenPrinted {
 			numAsStr := strconv.Itoa(num)
-			result += "Table " + numAsStr + ": " + trimmedLine + "\n:scaffolding-table-start:\n"
+			result += "Table " + numAsStr + ": " + trimmedLine + "\n:scaffolding-table-start-len-" + lengthAsString + ":\n"
 			titleHasNotBeenPrinted = false
 			continue
 		}
