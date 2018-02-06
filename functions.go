@@ -54,7 +54,7 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 		}
 
 		if titleHasNotBeenPrinted {
-			result += "Table " + numAsStr + ": " + trimmedLine + "\n:scaffolding-table-start:\n"
+			result += "Table " + numAsStr + ": " + trimmedLine + "\n:scaffolding-table-start-" + numAsStr + ":\n"
 			result += ":scaffolding-column-len-" + lengthAsString + ":\n"
 			titleHasNotBeenPrinted = false
 			continue
@@ -308,6 +308,21 @@ func (odt *Odt) AppendStrings(data string) error {
 	// replace the old content.xml with the newly generated content
 	odt.content = newContentXML
 	newContentXML = ""
+
+	//
+	// Convert scaffolding table elements to ODT elements
+	//
+
+	//tableNumAsString := 0
+	//scaffoldingTableStart := ":scaffolding-table-start-" + tableNumAsString + ":"
+	//newContentXML = strings.Replace(odt.content, scaffoldingTableStart,
+	//	"<table:table table:name=\"Table"+tableNumAsString+"\" table:style-name=\"Table"+tableNumAsString+"\">", -1)
+
+	//newContentXML = strings.Replace(newContentXML, ":scaffolding-table-end:", "</table:table>", -1)
+
+	// replace the old content.xml with the newly generated content
+	//odt.content = newContentXML
+	//newContentXML = ""
 
 	return nil
 }
