@@ -55,7 +55,7 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 
 		if titleHasNotBeenPrinted {
 			result += "Table " + numAsStr + ": " + trimmedLine + "\n:scaffolding-table-start-" + numAsStr + ":\n"
-			result += ":scaffolding-column-len-" + lengthAsString + ":\n"
+			result += ":scaffolding-column-table-" + numAsStr + ".A-len-" + lengthAsString + ":\n"
 			titleHasNotBeenPrinted = false
 			continue
 		} else if !headerHasBeenPrinted {
@@ -313,20 +313,18 @@ func (odt *Odt) AppendStrings(data string) error {
 	// Convert scaffolding table elements to ODT elements
 	//
 
-	//tableNumAsString := "0"
-	//scaffoldingTableStart := ":scaffolding-table-start-" + tableNumAsString + ":"
-	//newContentXML = strings.Replace(odt.content, scaffoldingTableStart,
-	//	"<table:table table:name=\"Table"+tableNumAsString+"\" table:style-name=\"Table"+tableNumAsString+"\">", -1)
-
+	//newContentXML = odt.content
+	//re1 := regexp.MustCompile(":scaffolding-table-start-(\\d+):")
+	//newContentXML = re1.ReplaceAllString(newContentXML, `<table:table table:name="Table$1" table:style-name="Table$1">`)
 	//newContentXML = strings.Replace(newContentXML, ":scaffolding-table-end:", "</table:table>", -1)
 
-	//columnLengthAsString := "0"
-	//newContentXML = strings.Replace(newContentXML, ":scaffolding-column-len-",
-	//	"<table:table-column table:style-name=\"Table"+tableNumAsString+"\" table:number-columns-repeated=\""+columnLengthAsString+"\"/>", -1)
+	//re2 := regexp.MustCompile(":scaffolding-column-table-(\\d+\\.[A-Z]+)-len-(\\d+):")
+	//newContentXML = re2.ReplaceAllString(newContentXML, `<table:table-column table:style-name=\"Table$1" table:number-columns-repeated="$2" />`)
+
+	//re3 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+):")
+	//newContentXML = re3.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string">`)
 
 	//newContentXML = strings.Replace(newContentXML, ":scaffolding-row-start:", "<table:table-row>", -1)
-	//newContentXML = strings.Replace(newContentXML, ":scaffolding-cell-start:",
-	//	"<table:table-cell table:style-name=\"Table"+tableNumAsString+"\" office:value-type=\"string\">", -1)
 	//newContentXML = strings.Replace(newContentXML, ":scaffolding-cell-end:", "</table:table-cell>", -1)
 	//newContentXML = strings.Replace(newContentXML, ":scaffolding-row-end:", "</table:table-row>", -1)
 
