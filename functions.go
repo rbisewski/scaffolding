@@ -313,12 +313,22 @@ func (odt *Odt) AppendStrings(data string) error {
 	// Convert scaffolding table elements to ODT elements
 	//
 
-	//tableNumAsString := 0
+	//tableNumAsString := "0"
 	//scaffoldingTableStart := ":scaffolding-table-start-" + tableNumAsString + ":"
 	//newContentXML = strings.Replace(odt.content, scaffoldingTableStart,
 	//	"<table:table table:name=\"Table"+tableNumAsString+"\" table:style-name=\"Table"+tableNumAsString+"\">", -1)
 
 	//newContentXML = strings.Replace(newContentXML, ":scaffolding-table-end:", "</table:table>", -1)
+
+	//columnLengthAsString := "0"
+	//newContentXML = strings.Replace(newContentXML, ":scaffolding-column-len-",
+	//	"<table:table-column table:style-name=\"Table"+tableNumAsString+"\" table:number-columns-repeated=\""+columnLengthAsString+"\"/>", -1)
+
+	//newContentXML = strings.Replace(newContentXML, ":scaffolding-row-start:", "<table:table-row>", -1)
+	//newContentXML = strings.Replace(newContentXML, ":scaffolding-cell-start:",
+	//	"<table:table-cell table:style-name=\"Table"+tableNumAsString+"\" office:value-type=\"string\">", -1)
+	//newContentXML = strings.Replace(newContentXML, ":scaffolding-cell-end:", "</table:table-cell>", -1)
+	//newContentXML = strings.Replace(newContentXML, ":scaffolding-row-end:", "</table:table-row>", -1)
 
 	// replace the old content.xml with the newly generated content
 	//odt.content = newContentXML
