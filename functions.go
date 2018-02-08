@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -286,12 +287,13 @@ func (odt *Odt) AppendStrings(data string) error {
 		fixedLine = strings.Replace(fixedLine, ">", "&gt;", -1)
 		fixedLine = strings.Replace(fixedLine, "<", "&lt;", -1)
 
+		// otherwise adjust normal text lines
 		if strings.Contains(fixedLine, ":scaffolding-page-break:") {
 			fixedLine = strings.Replace(fixedLine, ":scaffolding-page-break:",
 				"<text:p text:style-name=\"Standard\"/><text:p text:style-name=\"Standard\"/><text:p text:style-name=\"P1\">", -1)
 			newContentXML += fixedLine + "</text:p>"
 		} else {
-			newContentXML += "<text:p text:style-name=\"Standard\">" + fixedLine + "</text:p>"
+			newContentXML += fixedLine
 		}
 	}
 	newContentXML += "<text:p text:style-name=\"Standard\"/>" + pieces[1]
@@ -313,24 +315,24 @@ func (odt *Odt) AppendStrings(data string) error {
 	// Convert scaffolding table elements to ODT elements
 	//
 
-	//newContentXML = odt.content
-	//re1 := regexp.MustCompile(":scaffolding-table-start-(\\d+):")
-	//newContentXML = re1.ReplaceAllString(newContentXML, `<table:table table:name="Table$1" table:style-name="Table$1">`)
-	//newContentXML = strings.Replace(newContentXML, ":scaffolding-table-end:", "</table:table>", -1)
+	newContentXML = odt.content
+	re1 := regexp.MustCompile(":scaffolding-table-start-(\\d+):")
+	newContentXML = re1.ReplaceAllString(newContentXML, `<table:table table:name="Table$1" table:style-name="Table$1">`)
+	newContentXML = strings.Replace(newContentXML, ":scaffolding-table-end:", "</table:table>", -1)
 
-	//re2 := regexp.MustCompile(":scaffolding-column-table-(\\d+\\.[A-Z]+)-len-(\\d+):")
-	//newContentXML = re2.ReplaceAllString(newContentXML, `<table:table-column table:style-name=\"Table$1" table:number-columns-repeated="$2" />`)
+	re2 := regexp.MustCompile(":scaffolding-column-table-(\\d+\\.[A-Z]+)-len-(\\d+):")
+	newContentXML = re2.ReplaceAllString(newContentXML, `<table:table-column table:style-name="Table$1" table:number-columns-repeated="$2" />`)
 
-	//re3 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+):")
-	//newContentXML = re3.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string">`)
+	re3 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+):")
+	newContentXML = re3.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="Standard">`)
 
-	//newContentXML = strings.Replace(newContentXML, ":scaffolding-row-start:", "<table:table-row>", -1)
-	//newContentXML = strings.Replace(newContentXML, ":scaffolding-cell-end:", "</table:table-cell>", -1)
-	//newContentXML = strings.Replace(newContentXML, ":scaffolding-row-end:", "</table:table-row>", -1)
+	newContentXML = strings.Replace(newContentXML, ":scaffolding-row-start:", "<table:table-row>", -1)
+	newContentXML = strings.Replace(newContentXML, ":scaffolding-cell-end:", "</text:p></table:table-cell>", -1)
+	newContentXML = strings.Replace(newContentXML, ":scaffolding-row-end:", "</table:table-row>", -1)
 
 	// replace the old content.xml with the newly generated content
-	//odt.content = newContentXML
-	//newContentXML = ""
+	odt.content = newContentXML
+	newContentXML = ""
 
 	return nil
 }
