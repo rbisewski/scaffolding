@@ -55,7 +55,10 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 		}
 
 		if titleHasNotBeenPrinted {
-			result += "Table " + numAsStr + ": " + trimmedLine + "\n:scaffolding-table-start-" + numAsStr + ":\n"
+			result += ":scaffolding-table-title-start:"
+			result += "Table " + numAsStr + ": " + trimmedLine + "\n"
+			result += ":scaffolding-table-title-end:"
+			result += ":scaffolding-table-start-" + numAsStr + ":\n"
 			result += ":scaffolding-column-table-" + numAsStr + ".A-len-" + lengthAsString + ":\n"
 			titleHasNotBeenPrinted = false
 			continue
@@ -286,28 +289,37 @@ func (odt *Odt) AppendStrings(data string) error {
 		fixedLine := line
 		fixedLine = strings.Replace(fixedLine, ">", "&gt;", -1)
 		fixedLine = strings.Replace(fixedLine, "<", "&lt;", -1)
-
-		// otherwise adjust normal text lines
-		if strings.Contains(fixedLine, ":scaffolding-page-break:") {
-			fixedLine = strings.Replace(fixedLine, ":scaffolding-page-break:",
-				"<text:p text:style-name=\"Standard\"/><text:p text:style-name=\"Standard\"/><text:p text:style-name=\"P1\">", -1)
-			newContentXML += fixedLine + "</text:p>"
-		} else {
-			newContentXML += fixedLine
-		}
+		newContentXML += fixedLine
 	}
 	newContentXML += "<text:p text:style-name=\"Standard\"/>" + pieces[1]
 
-	// replace the old content.xml with the newly generated content
 	odt.content = newContentXML
+
+	//
+	// Handle table title elements
+	//
+
+	newContentXML = strings.Replace(odt.content, ":scaffolding-table-title-start:", "<text:p text:style-name=\"P1\">", -1)
+	newContentXML = strings.Replace(newContentXML, ":scaffolding-table-title-end:", "</text:p>", -1)
+
+	odt.content = newContentXML
+	newContentXML = ""
 
 	//
 	// Handle start-of-column spacing
 	//
 
-	newContentXML = strings.Replace(odt.content, ":scaffolding-odt-space:", "<text:s text:c=\"2\"/>", -1)
+	newContentXML = strings.Replace(odt.content, ":scaffolding-odt-space:", "<text:s text:c=\"6\"/>", -1)
+	odt.content = newContentXML
+	newContentXML = ""
 
-	// replace the old content.xml with the newly generated content
+	//
+	// Handle ODT page breaks
+	//
+
+	newContentXML = strings.Replace(odt.content, ":scaffolding-page-break:",
+		"<text:p text:style-name=\"Standard\"/><text:p text:style-name=\"Standard\"/>", -1)
+
 	odt.content = newContentXML
 	newContentXML = ""
 
