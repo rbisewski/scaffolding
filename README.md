@@ -57,6 +57,5 @@ program work as expected.
 
 ## TODO
 
-* Consider adding an option to create ODT files with autopopulated tables.
 * Run further testing on the new regex, once they are complete.
 * Since ODT tables use letter sequencing, figure out how to make tables with 26+ columns.
