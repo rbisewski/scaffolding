@@ -249,6 +249,10 @@ func (odt *Odt) AppendStrings(data string) error {
 			"<style:paragraph-properties fo:text-align=\"end\" style:justify-single-word=\"false\"/>"+
 			"</style:style>"+
 
+			"<style:style style:name=\"P3\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
+			"<style:paragraph-properties fo:text-align=\"center\" style:justify-single-word=\"false\"/>"+
+			"</style:style>"+
+
 			extractedStyles+
 
 			"</office:automatic-styles>", -1)
@@ -362,6 +366,8 @@ func (odt *Odt) AppendStrings(data string) error {
 
 	re2 := regexp.MustCompile(":scaffolding-column-table-(\\d+\\.[A-Z]+)-len-(\\d+):")
 	newContentXML = re2.ReplaceAllString(newContentXML, `<table:table-column table:style-name="Table$1" table:number-columns-repeated="$2" />`)
+
+	// TODO: add logic here so that cells after 1 will be centred, do this by using style P3
 
 	re3 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+):")
 	newContentXML = re3.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="Standard">`)
