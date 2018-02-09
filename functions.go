@@ -39,6 +39,8 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 	lengthAsString := strconv.Itoa(maxLength)
 
 	// for every line in the table...
+	maxColumns := 0
+	maxRows := 0
 	for _, l := range lines {
 
 		// set a table number
@@ -113,11 +115,21 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 			}
 
 			startingLetter++
+
+			if i > maxColumns {
+				maxColumns = i
+			}
 		}
 
 		result += ":scaffolding-row-start:" + cleanedLine + ":scaffolding-row-end:\n"
+
+		maxRows++
 	}
 
+	maxColumnsAsString := strconv.Itoa(maxColumns + 1)
+	maxRowsAsString := strconv.Itoa(maxRows)
+
+	result += ":scaffolding-table-cols-" + maxColumnsAsString + "-rows-" + maxRowsAsString + ":\n"
 	result += ":scaffolding-table-end:\n"
 
 	return result, nil
@@ -215,15 +227,31 @@ func (odt *Odt) AppendStrings(data string) error {
 	}
 
 	//
+	// Extract styles from the scaffolding elements
+	//
+
+	extractedStyles, err := obtainStylesFromScaffolding(data)
+	if err != nil {
+		return err
+	}
+
+	//
 	// Append the new document styles
 	//
 
-	newContentXML := strings.Replace(odt.content, "<office:automatic-styles/>", "<office:automatic-styles>"+
-		"<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
-		"<style:paragraph-properties fo:break-before=\"page\"/></style:style>"+
-		"<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Footer\">"+
-		"<style:paragraph-properties fo:text-align=\"end\" style:justify-single-word=\"false\"/>"+
-		"</style:style></office:automatic-styles>", -1)
+	newContentXML := strings.Replace(odt.content, "<office:automatic-styles/>",
+		"<office:automatic-styles>"+
+
+			"<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
+			"<style:paragraph-properties fo:break-before=\"page\"/></style:style>"+
+
+			"<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Footer\">"+
+			"<style:paragraph-properties fo:text-align=\"end\" style:justify-single-word=\"false\"/>"+
+			"</style:style>"+
+
+			extractedStyles+
+
+			"</office:automatic-styles>", -1)
 
 	// replace the old content.xml with the newly generated content
 	odt.content = newContentXML
@@ -411,4 +439,52 @@ func streamToByte(stream io.Reader) []byte {
 	buf.ReadFrom(stream)
 
 	return buf.Bytes()
+}
+
+// obtainStylesFromScaffolding ... turn scaffolding elements into ODT styles
+func obtainStylesFromScaffolding(data string) (string, error) {
+
+	if data == "" {
+		return "", fmt.Errorf("obtainStylesFromScaffolding(() --> invalid input")
+	}
+
+	regexStyles := regexp.MustCompile(":scaffolding-table-cols-(\\d+)-rows-(\\d+):")
+	matches := regexStyles.FindAllStringSubmatch(data, -1)
+
+	styles := ""
+
+	// TODO: implement logic to print styles, some examples are below
+	matches = matches
+
+	/*"<style:style style:name=\"Table1.A1\" style:family=\"table-cell\">" +
+	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
+	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
+	"</style:style>" +
+
+	"<style:style style:name=\"Table1.A2\" style:family=\"table-cell\">" +
+	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
+	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
+	"</style:style>" +
+
+	"<style:style style:name=\"Table1.A24\" style:family=\"table-cell\">" +
+	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
+	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
+	"</style:style>" +
+
+	"<style:style style:name=\"Table1.B1\" style:family=\"table-cell\">" +
+	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
+	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
+	"</style:style>" +
+
+	"<style:style style:name=\"Table1.B2\" style:family=\"table-cell\">" +
+	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
+	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
+	"</style:style>" +
+
+	"<style:style style:name=\"Table1.B24\" style:family=\"table-cell\">" +
+	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
+	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
+	"</style:style>" */
+
+	return styles, nil
 }
