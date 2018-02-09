@@ -451,40 +451,48 @@ func obtainStylesFromScaffolding(data string) (string, error) {
 	regexStyles := regexp.MustCompile(":scaffolding-table-cols-(\\d+)-rows-(\\d+):")
 	matches := regexStyles.FindAllStringSubmatch(data, -1)
 
+	// ISO standard for the ODT suggests starting with the ASCII value of "A"
+	startingLetter := 65
+
 	styles := ""
 
-	// TODO: implement logic to print styles, some examples are below
-	matches = matches
+	for i, matchArray := range matches {
 
-	/*"<style:style style:name=\"Table1.A1\" style:family=\"table-cell\">" +
-	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
-	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
-	"</style:style>" +
+		// skip if invalid match array
+		if len(matchArray) != 3 {
+			continue
+		}
 
-	"<style:style style:name=\"Table1.A2\" style:family=\"table-cell\">" +
-	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
-	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
-	"</style:style>" +
+		tableNumStr := strconv.Itoa(i + 1)
+		columns, err := strconv.ParseInt(matchArray[1], 10, 64)
+		if err != nil {
+			return "", err
+		}
 
-	"<style:style style:name=\"Table1.A24\" style:family=\"table-cell\">" +
-	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
-	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
-	"</style:style>" +
+		// TODO: re-enable this at some future date for handling single-cell row contexts
+		//rows, err := strconv.ParseInt(matchArray[2], 10, 64)
+		//if err != nil {
+		//	return "", err
+		//}
 
-	"<style:style style:name=\"Table1.B1\" style:family=\"table-cell\">" +
-	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
-	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
-	"</style:style>" +
+		//
+		// handle column styles
+		//
+		for j := 0; j < int(columns); j++ {
 
-	"<style:style style:name=\"Table1.B2\" style:family=\"table-cell\">" +
-	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
-	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
-	"</style:style>" +
+			letterStr := string(byte(startingLetter + j))
 
-	"<style:style style:name=\"Table1.B24\" style:family=\"table-cell\">" +
-	"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
-	"fo:border-right=\"none\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
-	"</style:style>" */
+			styles += "<style:style style:name=\"Table" + tableNumStr + "." + letterStr + "1\" style:family=\"table-cell\">" +
+				"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
+				"fo:border-right=\"0.05pt solid #000000\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
+				"</style:style>"
+
+			styles += "<style:style style:name=\"Table" + tableNumStr + "." + letterStr + "2\" style:family=\"table-cell\">" +
+				"<style:table-cell-properties fo:padding=\"0.049cm\" fo:border-left=\"0.05pt solid #000000\" " +
+				"fo:border-right=\"0.05pt solid #000000\" fo:border-top=\"0.05pt solid #000000\" fo:border-bottom=\"0.05pt solid #000000\"/>" +
+				"</style:style>"
+		}
+	}
 
 	return styles, nil
 }
