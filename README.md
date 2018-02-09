@@ -58,6 +58,6 @@ program work as expected.
 ## TODO
 
 * Run further testing on the new regex, once they are complete.
-* Add border styles to generated ODT tables.
 * Test that tables with 3+ columns still have correct styling.
+* Add the ability to combine lone single-cell rows to the full length of table.
 * Since ODT tables use letter sequencing, figure out how to make tables with 26+ columns.
