@@ -97,10 +97,6 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 
 			cleanedString := strings.TrimSpace(p)
 
-			if cleanedString == "" {
-				continue
-			}
-
 			if strings.Contains(cleanedString, ",") {
 				cleanedString = strings.Replace(cleanedString, ",", " ", -1)
 			}
@@ -108,7 +104,9 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 			letterStr := string(byte(startingLetter))
 			cellStartStyle := ":scaffolding-cell-start-table-" + numAsStr + "." + letterStr + rowNumAsString + ":"
 
-			if i == 0 {
+			if cleanedString == "" {
+				cleanedLine += cellStartStyle + " :scaffolding-cell-end: "
+			} else if i == 0 {
 				cleanedLine = cellStartStyle + prefix + cleanedString + ":scaffolding-cell-end: "
 			} else {
 				cleanedLine += cellStartStyle + cleanedString + ":scaffolding-cell-end: "
