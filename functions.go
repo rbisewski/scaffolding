@@ -105,7 +105,7 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 			cellStartStyle := ":scaffolding-cell-start-table-" + numAsStr + "." + letterStr + rowNumAsString + ":"
 
 			if cleanedString == "" {
-				cleanedLine += cellStartStyle + " :scaffolding-cell-end: "
+				cleanedLine += cellStartStyle + " :scaffolding-cell-end::scaffolding-covered-cell:"
 			} else if i == 0 {
 				cleanedLine = cellStartStyle + prefix + cleanedString + ":scaffolding-cell-end: "
 			} else {
@@ -370,8 +370,10 @@ func (odt *Odt) AppendStrings(data string) error {
 	re3 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+):")
 	newContentXML = re3.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="Standard">`)
 
+	// TODO: test the covered-table-cell replacer below to ensure that it actually works
 	newContentXML = strings.Replace(newContentXML, ":scaffolding-row-start:", "<table:table-row>", -1)
 	newContentXML = strings.Replace(newContentXML, ":scaffolding-cell-end:", "</text:p></table:table-cell>", -1)
+	newContentXML = strings.Replace(newContentXML, ":scaffolding-covered-cell:", "<table:covered-table-cell/>", -1)
 	newContentXML = strings.Replace(newContentXML, ":scaffolding-row-end:", "</table:table-row>", -1)
 
 	// replace the old content.xml with the newly generated content
