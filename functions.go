@@ -102,7 +102,12 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 			}
 
 			letterStr := string(byte(startingLetter))
-			cellStartStyle := ":scaffolding-cell-start-table-" + numAsStr + "." + letterStr + rowNumAsString + ":"
+
+			// determine whether to centre the cell contents or not; current logic centres all elements after 1st
+			cellStartStyle := ":scaffolding-cell-centred-start-table-" + numAsStr + "." + letterStr + rowNumAsString + ":"
+			if i == 0 {
+				cellStartStyle = ":scaffolding-cell-start-table-" + numAsStr + "." + letterStr + rowNumAsString + ":"
+			}
 
 			if cleanedString == "" {
 				cleanedLine += cellStartStyle + " :scaffolding-cell-end::scaffolding-covered-cell:"
@@ -365,10 +370,12 @@ func (odt *Odt) AppendStrings(data string) error {
 	re2 := regexp.MustCompile(":scaffolding-column-table-(\\d+\\.[A-Z]+)-len-(\\d+):")
 	newContentXML = re2.ReplaceAllString(newContentXML, `<table:table-column table:style-name="Table$1" table:number-columns-repeated="$2" />`)
 
-	// TODO: add logic here so that cells after 1 will be centred, do this by using style P3
+	// logic here is so that cells after 1 will be centred, do this by using style P3 (defined further above at the start of this function)
+	re3 := regexp.MustCompile(":scaffolding-cell-centred-start-table-(\\d+\\.[A-Z]+\\d+):")
+	newContentXML = re3.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="P3">`)
 
-	re3 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+):")
-	newContentXML = re3.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="Standard">`)
+	re4 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+):")
+	newContentXML = re4.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="Standard">`)
 
 	// TODO: test the covered-table-cell replacer below to ensure that it actually works
 	newContentXML = strings.Replace(newContentXML, ":scaffolding-row-start:", "<table:table-row>", -1)
