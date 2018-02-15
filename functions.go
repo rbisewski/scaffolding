@@ -109,6 +109,11 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 				cellStartStyle = ":scaffolding-cell-start-table-" + numAsStr + "." + letterStr + rowNumAsString + ":"
 			}
 
+			// add a bold style to the first row of every table
+			if rowNum == 1 {
+				cellStartStyle += ":scaffolding-cell-bold:"
+			}
+
 			if cleanedString == "" {
 				cleanedLine += cellStartStyle + " :scaffolding-cell-end::scaffolding-covered-cell:"
 			} else if i == 0 {
@@ -246,7 +251,8 @@ func (odt *Odt) AppendStrings(data string) error {
 		"<office:automatic-styles>"+
 
 			"<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
-			"<style:paragraph-properties fo:break-before=\"page\"/></style:style>"+
+			"<style:paragraph-properties fo:break-before=\"page\"/>"+
+			"</style:style>"+
 
 			"<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Footer\">"+
 			"<style:paragraph-properties fo:text-align=\"end\" style:justify-single-word=\"false\"/>"+
@@ -254,6 +260,15 @@ func (odt *Odt) AppendStrings(data string) error {
 
 			"<style:style style:name=\"P3\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
 			"<style:paragraph-properties fo:text-align=\"center\" style:justify-single-word=\"false\"/>"+
+			"</style:style>"+
+
+			"<style:style style:name=\"P4\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
+			"<style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\" style:font-weight-complex=\"bold\"/>"+
+			"</style:style>"+
+
+			"<style:style style:name=\"P5\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
+			"<style:paragraph-properties fo:text-align=\"center\" style:justify-single-word=\"false\"/>"+
+			"<style:text-properties fo:font-weight=\"bold\" style:font-weight-asian=\"bold\" style:font-weight-complex=\"bold\"/>"+
 			"</style:style>"+
 
 			extractedStyles+
@@ -371,11 +386,17 @@ func (odt *Odt) AppendStrings(data string) error {
 	newContentXML = re2.ReplaceAllString(newContentXML, `<table:table-column table:style-name="Table$1" table:number-columns-repeated="$2" />`)
 
 	// logic here is so that cells after 1 will be centred, do this by using style P3 (defined further above at the start of this function)
-	re3 := regexp.MustCompile(":scaffolding-cell-centred-start-table-(\\d+\\.[A-Z]+\\d+):")
-	newContentXML = re3.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="P3">`)
+	re3 := regexp.MustCompile(":scaffolding-cell-centred-start-table-(\\d+\\.[A-Z]+\\d+)::scaffolding-cell-bold:")
+	newContentXML = re3.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="P5">`)
 
-	re4 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+):")
-	newContentXML = re4.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="Standard">`)
+	re4 := regexp.MustCompile(":scaffolding-cell-centred-start-table-(\\d+\\.[A-Z]+\\d+):")
+	newContentXML = re4.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="P3">`)
+
+	re5 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+)::scaffolding-cell-bold:")
+	newContentXML = re5.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="P4">`)
+
+	re6 := regexp.MustCompile(":scaffolding-cell-start-table-(\\d+\\.[A-Z]+\\d+):")
+	newContentXML = re6.ReplaceAllString(newContentXML, `<table:table-cell table:style-name="Table$1" office:value-type="string"><text:p text:style-name="Standard">`)
 
 	// TODO: test the covered-table-cell replacer below to ensure that it actually works
 	newContentXML = strings.Replace(newContentXML, ":scaffolding-row-start:", "<table:table-row>", -1)
