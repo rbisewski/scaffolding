@@ -1,7 +1,7 @@
 package main
 
 /*
- * Convert rosewood tables into ISO standard ODT files.
+ * Convert rosewood tables into ISO standard ODT files or CSV files.
  *
  * Usage: identify_conditions
  *        -csv
@@ -17,6 +17,12 @@ package main
  * 	outdir        Output location; e.g. /path/to/output/directory
  *
  * 	Description:
+ * 		The ODT values created by this program can be read by Libreoffice or
+ * 		imported into other software. Word tends to complain about the file
+ *		being non-standard, however, in practice it will import it without
+ *		problems. Afterwards the end-user may save it via Word into other
+ *		formats should they need.
+ *
  * 		The CSV values created by this program can be imported and used as tables
  * 		in LibreOffice or other software. A sample output file looks like:
  *
