@@ -251,7 +251,8 @@ func (odt *Odt) AppendStrings(data string) error {
 		"<office:automatic-styles>"+
 
 			"<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
-			"<style:paragraph-properties fo:break-before=\"page\"/>"+
+			"<style:paragraph-properties fo:break-before=\"page\" />"+
+			"<style:text-properties fo:color=\"#566cc9\" />"+
 			"</style:style>"+
 
 			"<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Footer\">"+
