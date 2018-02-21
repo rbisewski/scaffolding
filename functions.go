@@ -252,7 +252,7 @@ func (odt *Odt) AppendStrings(data string) error {
 
 			"<style:style style:name=\"P1\" style:family=\"paragraph\" style:parent-style-name=\"Standard\">"+
 			"<style:paragraph-properties fo:break-before=\"page\" />"+
-			"<style:text-properties fo:color=\"#566cc9\" />"+
+			"<style:text-properties fo:color=\"#566cc9\" fo:font-size=\"11pt\" />"+
 			"</style:style>"+
 
 			"<style:style style:name=\"P2\" style:family=\"paragraph\" style:parent-style-name=\"Footer\">"+
