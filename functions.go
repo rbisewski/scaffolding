@@ -57,11 +57,11 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 		}
 
 		if titleHasNotBeenPrinted {
-			result += ":scaffolding-table-title-start:"
+			result += SCAFFOLDING_TABLE_TITLE_START
 			result += "Table " + numAsStr + ": " + trimmedLine + "\n"
-			result += ":scaffolding-table-title-end:"
-			result += ":scaffolding-table-start-" + numAsStr + ":\n"
-			result += ":scaffolding-column-table-" + numAsStr + ".A-len-" + lengthAsString + ":\n"
+			result += SCAFFOLDING_TABLE_TITLE_END
+			result += SCAFFOLDING_TABLE_START + numAsStr + ":\n"
+			result += SCAFFOLDING_COLUMN_TABLE + numAsStr + ".A-len-" + lengthAsString + ":\n"
 			titleHasNotBeenPrinted = false
 			continue
 		} else if !headerHasBeenPrinted {
@@ -92,7 +92,7 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 			if i == 0 && strings.HasPrefix(p, "  ") && PrintAsCSV {
 				prefix = "  "
 			} else if i == 0 && strings.HasPrefix(p, "  ") {
-				prefix = ":scaffolding-odt-space:"
+				prefix = SCAFFOLDING_ODT_SPACE
 			}
 
 			cleanedString := strings.TrimSpace(p)
@@ -104,22 +104,22 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 			letterStr := string(byte(startingLetter))
 
 			// determine whether to centre the cell contents or not; current logic centres all elements after 1st
-			cellStartStyle := ":scaffolding-cell-centred-start-table-" + numAsStr + "." + letterStr + rowNumAsString + ":"
+			cellStartStyle := SCAFFOLDING_CELL_CENTRED_START_TABLE + numAsStr + "." + letterStr + rowNumAsString + ":"
 			if i == 0 {
-				cellStartStyle = ":scaffolding-cell-start-table-" + numAsStr + "." + letterStr + rowNumAsString + ":"
+				cellStartStyle = SCAFFOLDING_CELL_START_TABLE + numAsStr + "." + letterStr + rowNumAsString + ":"
 			}
 
 			// add a bold style to the first row of every table
 			if rowNum == 1 {
-				cellStartStyle += ":scaffolding-cell-bold:"
+				cellStartStyle += SCAFFOLDING_CELL_BOLD
 			}
 
 			if cleanedString == "" {
-				cleanedLine += cellStartStyle + " :scaffolding-cell-end::scaffolding-covered-cell:"
+				cleanedLine += cellStartStyle + " " + SCAFFOLDING_CELL_END + SCAFFOLDING_COVERED_CELL_END
 			} else if i == 0 {
-				cleanedLine = cellStartStyle + prefix + cleanedString + ":scaffolding-cell-end: "
+				cleanedLine = cellStartStyle + prefix + cleanedString + SCAFFOLDING_CELL_END + " "
 			} else {
-				cleanedLine += cellStartStyle + cleanedString + ":scaffolding-cell-end: "
+				cleanedLine += cellStartStyle + cleanedString + SCAFFOLDING_CELL_END + " "
 			}
 
 			startingLetter++
@@ -129,7 +129,7 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 			}
 		}
 
-		result += ":scaffolding-row-start:" + cleanedLine + ":scaffolding-row-end:\n"
+		result += SCAFFOLDING_ROW_START + cleanedLine + SCAFFOLDING_ROW_END + "\n"
 
 		maxRows++
 	}
@@ -137,8 +137,8 @@ func convertRosewoodToCSV(lines []string, num int) (string, error) {
 	maxColumnsAsString := strconv.Itoa(maxColumns + 1)
 	maxRowsAsString := strconv.Itoa(maxRows)
 
-	result += ":scaffolding-table-cols-" + maxColumnsAsString + "-rows-" + maxRowsAsString + ":\n"
-	result += ":scaffolding-table-end:\n"
+	result += SCAFFOLDING_TABLE_COLS + maxColumnsAsString + "-rows-" + maxRowsAsString + ":\n"
+	result += SCAFFOLDING_TABLE_END + "\n"
 
 	return result, nil
 }
