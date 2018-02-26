@@ -16,4 +16,5 @@ const (
 	SCAFFOLDING_COVERED_CELL_END         = ":scaffolding-covered-cell-end:"
 	SCAFFOLDING_CELL_END                 = ":scaffolding-cell-end:"
 	SCAFFOLDING_ODT_SPACE                = ":scaffolding-odt-space:"
+	SCAFFOLDING_PAGE_BREAK               = ":scaffolding-page-break:"
 )

@@ -146,7 +146,7 @@ func main() {
 		} else {
 
 			// subsequent tables of ODT
-			contents += ":scaffolding-page-break:" + csvOutput
+			contents += SCAFFOLDING_PAGE_BREAK + csvOutput
 		}
 	}
 
