@@ -483,7 +483,7 @@ func obtainStylesFromScaffolding(data string) (string, error) {
 		return "", fmt.Errorf("obtainStylesFromScaffolding(() --> invalid input")
 	}
 
-	regexStyles := regexp.MustCompile(":scaffolding-table-cols-(\\d+)-rows-(\\d+):")
+	regexStyles := regexp.MustCompile(SCAFFOLDING_TABLE_COLS + "(\\d+)-rows-(\\d+):")
 	matches := regexStyles.FindAllStringSubmatch(data, -1)
 
 	// ISO standard for the ODT suggests starting with the ASCII value of "A"
