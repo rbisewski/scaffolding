@@ -66,3 +66,6 @@ program work as expected.
   table.
 * Since ODT tables use letter sequencing, figure out how to make tables
   with 26+ columns.
+* Add the ability to convert rosewood footnotes like `^a` to `^z` to
+  superscripted numerals + ODT Footnotes for the purpose of generating more
+  complex tables from the rosewood plaintext.
