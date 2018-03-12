@@ -167,12 +167,6 @@ func main() {
 	os.Exit(0)
 }
 
-// Fatal prints error message in red and exits to shell with code 1
-func fatal(err error) {
-	fmt.Fprintf(os.Stderr, "\n%s\n", err)
-	os.Exit(1)
-}
-
 // Setup the program arguments
 func setupArguments(config *Config) error {
 
