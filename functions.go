@@ -13,6 +13,12 @@ import (
 	"strings"
 )
 
+// Fatal prints error message in red and exits to shell with code 1
+func fatal(err error) {
+	fmt.Fprintf(os.Stderr, "\n%s\n", err)
+	os.Exit(1)
+}
+
 // convertRosewoodToCSV ... turns an array of lines of a Rosewood table into CSV
 func convertRosewoodToCSV(lines []string, num int) (string, error) {
 
